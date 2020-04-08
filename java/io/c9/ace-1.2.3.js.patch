@@ -1,0 +1,111 @@
+28c28
+< var ace;
+---
+> var ace = {};
+52a53,83
+>  * @record
+>  */
+> ace.Position = function() {};
+> /** @type {number} */
+> ace.Position.prototype.row;
+> /** @type {number} */
+> ace.Position.prototype.column;
+> 
+> /**
+>  * @record
+>  */
+> ace.Token = function() {};
+> 
+> /** @type {number} */
+> ace.Token.prototype.index;
+> /** @type {number} */
+> ace.Token.prototype.start;
+> /** @type {string} */
+> ace.Token.prototype.value;
+> 
+> /**
+>  * @record
+>  */
+> ace.TokenizerToken = function() {};
+> 
+> /** @type {string} */
+> ace.TokenizerToken.prototype.type;
+> /** @type {string} */
+> ace.TokenizerToken.prototype.value;
+> 
+> /**
+249c280
+<  * @return {{row: number, column: number}}
+---
+>  * @return {ace.Position}
+255c286
+<  * @param {!Object} position
+---
+>  * @param {!ace.Position} position
+257c288
+<  * @return {!Object}
+---
+>  * @return {!ace.Position}
+264c295
+<  * @param {!Object} position
+---
+>  * @param {!ace.Position} position
+266c297
+<  * @return {!Object}
+---
+>  * @return {!ace.Position}
+276d306
+<  * @return {!Object}
+283,284c313
+<  * @param {!Object} position
+<  * @return {!Object}
+---
+>  * @param {ace.Position} position
+297c326
+<  * @param {{row: number, column: number}} pos
+---
+>  * @param {ace.Position} pos
+306c335
+<  * @return {!Object}
+---
+>  * @return {!ace.Position}
+316c345
+<  * @return {!Object}
+---
+>  * @return {!ace.Position}
+339c368
+<  * @return {!Object}
+---
+>  * @return {!ace.Position}
+639c668
+<  * @return {!Object}
+---
+>  * @return {!ace.Token}
+755c784
+<  * @param {{row: number, column: number}} toPosition
+---
+>  * @param {ace.Position} toPosition
+878,879c907,910
+< /** Undocumented */
+< ace.EditSession.prototype.setMode = function() {};
+---
+> /**
+>  * @param {string|ace.mode.Mode}
+>  */
+> ace.EditSession.prototype.setMode = function(mode) {};
+1195,1197c1226,1228
+<  * @param {!Object} row
+<  * @param {!Object} column
+<  * @return {number}
+---
+>  * @param {number} row
+>  * @param {number} column
+>  * @return {ace.Token}
+1360c1391
+<  * @param {{row: number, column: number}} pos
+---
+>  * @param {ace.Position} pos
+2556c2587
+<  * @return {{tokens: !Array<!Object>, state: !Object}}
+---
+>  * @return {{tokens: !Array<!ace.TokenizerToken>, state: !Object}}
