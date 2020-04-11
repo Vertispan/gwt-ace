@@ -22,8 +22,8 @@ setup_j2cl_workspace()
 # Load elemental2 so we can share core and dom
 http_archive(
     name = "com_google_elemental2",
-    strip_prefix = "elemental2-master",
-    url = "https://github.com/google/elemental2/archive/master.zip",
+    strip_prefix = "elemental2-consistent-externs",
+    url = "https://github.com/Vertispan/elemental2/archive/consistent-externs.zip",
 )
 
 # We're _not_ sharing this rule from elemenetal2, we want to change the externs glob
