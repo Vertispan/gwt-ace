@@ -23,8 +23,37 @@ MAVEN_JAVA_SRC=${DIR}/maven/src/main/java
 
 LICENSE_HEADER=${DIR}/maven/license.txt
 
-# Invoke Bazel to produce the sources that we need
-${BAZEL} build //java/io/c9:libace-editor-src.jar
+# Bazel on circleci dies a lot, allow for retries if set
+ATTEMPTS=${ATTEMPTS:-1}
+
+# Allow failures for this part
+set +e
+
+# Current try is "zero"
+i=0
+
+# Indicate that we should try at least once
+RESULT=1
+
+while [[ ${RESULT} -ne 0 && ${i} -lt ${ATTEMPTS} ]]
+do
+  i=$(($i+1))
+  # Invoke Bazel to produce the sources that we need
+  ${BAZEL} build //java/io/c9:libace-editor-src.jar
+
+  # Track the result
+  RESULT=$?
+done
+
+# Reinstate "stop on failure"
+set -e
+
+# If last attempt was a failure, give up
+if [[ ${RESULT} -ne 0 ]]
+then
+    echo "Failed after ${RETRIES} retries"
+    exit 1
+fi
 
 # Copy generated java sources into maven source dir, apply license header
 cd ${MAVEN_JAVA_SRC}

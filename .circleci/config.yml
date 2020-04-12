@@ -15,16 +15,19 @@ jobs:
             bazel sync
       - run:
           name: Run bazel build to produce jsinterop classes, copy to maven project
-          command: ./build.sh || ./build.sh || ./build.sh || ./build.sh
+          command: ATTEMPTS=5 ./build.sh
       - run:
           name: Build maven jars and deploy
           command: |
             cd maven
-            mvn deploy -Prelease -Dgpg.skip=true -Dossrh.username=$SONATYPE_USERNAME -Dossrh.password=$SONATYPE_APIKEY
+            mvn deploy -Prelease -Dgpg.skip=true \
+            -s ../.circleci/settings.xml -Dossrh.username=$SONATYPE_USERNAME -Dossrh.password=$SONATYPE_APIKEY
       - run:
           name: Re-deploy to Vertispan repo
           command: |
             cd maven
-            mvn deploy -Prelease -Dgpg.skip=true -DaltSnapshotDeploymentRepository=vertispan-snapshots::default::https://repo.vertispan.com/gwt-snapshot/ -Dartifactory.username=$ARTIFACTORY_USER -Dartifactory.password=$ARTIFACTORY_APIKEY
+            mvn deploy -Prelease -Dgpg.skip=true \
+            -DaltSnapshotDeploymentRepository=vertispan-snapshots::default::https://repo.vertispan.com/gwt-snapshot/ \
+            -s ../.circleci/settings.xml -Dartifactory.username=$ARTIFACTORY_USER -Dartifactory.password=$ARTIFACTORY_APIKEY
 
 
