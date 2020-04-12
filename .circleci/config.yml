@@ -15,7 +15,7 @@ jobs:
             bazel sync
       - run:
           name: Run bazel build to produce jsinterop classes, copy to maven project
-          command: ./build.sh
+          command: ./build.sh || ./build.sh || ./build.sh || ./build.sh
       - run:
           name: Build maven jars and deploy
           command: |
