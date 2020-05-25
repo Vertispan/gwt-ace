@@ -5,6 +5,13 @@ jobs:
       - image: vertispan/openjdk:8u222-jdk-stretch
     steps:
       - checkout
+      - restore_cache:
+          name: Restoring cache - bazel repository
+          keys:
+            - v1-bazel-{{ checksum ".bazelversion" }}-{{ checksum "WORKSPACE" }}-{{ checksum "build_defs/repository.bzl" }}
+            - v1-bazel-{{ checksum ".bazelversion" }}-
+          paths:
+            - ~/bazel_repository_cache
       - run:
           name: Initialize Bazel
           command: |
@@ -12,6 +19,8 @@ jobs:
             echo "build --jobs=1" >> .bazelrc
             echo "build --local_ram_resources=512" >> .bazelrc
             echo "--host_jvm_args=-Xmx512m" >> .bazelrc
+            # ask bazel to put its downloaded resources in a directory we can cache
+            echo "build --repository_cache=~/bazel_repository_cache" >> .bazelrc
             # download dependencies, ensure nothing is stale
             bazel sync
       - run:
@@ -20,19 +29,48 @@ jobs:
       - persist_to_workspace:
           root: ~/project
           paths: maven/src
-  deploy-to-maven-repos: # pushes to both sonatype and our own artifactory repo
+      - save_cache:
+          name: Save Cache - bazel repository
+          key: v1-bazel-{{ checksum ".bazelversion" }}-{{ checksum "WORKSPACE" }}-{{ checksum "build_defs/repository.bzl" }}
+          paths:
+            - ~/bazel_repository_cache
+  deploy-to-sonatype:
     docker:
       - image: vertispan/openjdk:8u222-jdk-stretch
     steps:
       - checkout
       - attach_workspace:
           at: ~/project
+      - restore_cache:
+          name:  Restoring Cache - m2 repository
+          keys:
+            - v1-dependencies-{{ checksum "maven/pom.xml" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
       - run:
           name: Build maven jars and deploy
           command: |
             cd maven
             mvn deploy -Prelease -Dgpg.skip=true \
             -s ../.circleci/settings.xml -Dossrh.username=$SONATYPE_USERNAME -Dossrh.password=$SONATYPE_APIKEY
+      - save_cache:
+          name:  Save Cache - m2 repository
+          paths:
+            - ~/.m2/repository
+          key: v1-dependencies-{{ checksum "maven/pom.xml" }}
+  deploy-to-vertispan-artifactory:
+    docker:
+      - image: vertispan/openjdk:8u222-jdk-stretch
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/project
+      - restore_cache:
+          name:  Restoring Cache - m2 repository
+          keys:
+            - v1-dependencies-{{ checksum "maven/pom.xml" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
       - run:
           name: Deploy to Vertispan repo
           command: |
@@ -40,14 +78,22 @@ jobs:
             mvn deploy -Prelease -Dgpg.skip=true \
             -DaltSnapshotDeploymentRepository=vertispan-snapshots::https://repo.vertispan.com/gwt-snapshot/ \
             -s ../.circleci/settings.xml -Dartifactory.username=$ARTIFACTORY_USER -Dartifactory.password=$ARTIFACTORY_APIKEY
-
+      - save_cache:
+          name:  Save Cache - m2 repository
+          paths:
+            - ~/.m2/repository
+          key: v1-dependencies-{{ checksum "maven/pom.xml" }}
 
 workflows:
   version: 2
   ci_build:
     jobs:
       - build
-      - deploy-to-maven-repos:
+      - deploy-to-sonatype:
+          requires:
+            - build
+          context: deploy-keys
+      - deploy-to-vertispan-artifactory:
           requires:
             - build
           context: deploy-keys
