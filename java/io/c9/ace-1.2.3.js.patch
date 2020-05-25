@@ -2,6 +2,10 @@
 < var ace;
 ---
 > var ace = {};
+33c33
+<  * @param {?} mode // TODO: define !ace.Mode.
+---
+>  * @param {string|Object} mode // TODO: define !ace.Mode.
 52a53,83
 >  * @record
 >  */
@@ -77,6 +81,10 @@
 <  * @return {!Object}
 ---
 >  * @return {!ace.Position}
+368c397
+<  * @param {?} mode
+---
+>  * @param {string|Object} mode
 639c668
 <  * @return {!Object}
 ---

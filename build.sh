@@ -51,7 +51,7 @@ set -e
 # If last attempt was a failure, give up
 if [[ ${RESULT} -ne 0 ]]
 then
-    echo "Failed after ${RETRIES} retries"
+    echo "Failed after ${ATTEMPTS} retries"
     exit 1
 fi
 
