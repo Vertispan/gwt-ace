@@ -101,7 +101,14 @@
 >  * @param {string|ace.mode.Mode}
 >  */
 > ace.EditSession.prototype.setMode = function(mode) {};
-1195,1197c1226,1228
+1141c1172,1175
+< /** Undocumented */
+---
+> /**
+>  * Undocumented
+>  * @return {boolean}
+>  */
+1195,1197c1229,1231
 <  * @param {!Object} row
 <  * @param {!Object} column
 <  * @return {number}
@@ -109,11 +116,38 @@
 >  * @param {number} row
 >  * @param {number} column
 >  * @return {ace.Token}
-1360c1391
+1360c1394
 <  * @param {{row: number, column: number}} pos
 ---
 >  * @param {ace.Position} pos
-2556c2587
+1672,1673c1706,1711
+< /** Undocumented */
+< ace.Editor.prototype.setDisplayIndentGuides = function() {};
+---
+> /**
+>  * Undocumented
+>  * @param {boolean} display
+>  * @return {undefined}
+>  */
+> ace.Editor.prototype.setDisplayIndentGuides = function(display) {};
+2556c2594
 <  * @return {{tokens: !Array<!Object>, state: !Object}}
 ---
 >  * @return {{tokens: !Array<!ace.TokenizerToken>, state: !Object}}
+2653c2691,2694
+< /** Undocumented */
+---
+> /**
+>  * Undocumented
+>  * @return {boolean}
+>  */
+2876,2877c2917,2922
+< /** Undocumented */
+< ace.VirtualRenderer.prototype.setDisplayIndentGuides = function() {};
+---
+> /**
+>  * Undocumented
+>  * @param {boolean} display
+>  * @return {undefined}
+>  */
+> ace.VirtualRenderer.prototype.setDisplayIndentGuides = function(display) {};
