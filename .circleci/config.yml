@@ -38,7 +38,7 @@ jobs:
           command: |
             cd maven
             mvn deploy -Prelease -Dgpg.skip=true \
-            -DaltSnapshotDeploymentRepository=vertispan-snapshots::default::https://repo.vertispan.com/gwt-snapshot/ \
+            -DaltSnapshotDeploymentRepository=vertispan-snapshots::https://repo.vertispan.com/gwt-snapshot/ \
             -s ../.circleci/settings.xml -Dartifactory.username=$ARTIFACTORY_USER -Dartifactory.password=$ARTIFACTORY_APIKEY
 
 
