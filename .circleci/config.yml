@@ -8,10 +8,12 @@ jobs:
       - restore_cache:
           name: Restoring cache - bazel repository
           keys:
+            - v2-bazel-{{ checksum ".bazelversion" }}-{{ checksum "WORKSPACE" }}-{{ checksum "build_defs/repository.bzl" }}
+            - v2-bazel-{{ checksum ".bazelversion" }}-
             - v1-bazel-{{ checksum ".bazelversion" }}-{{ checksum "WORKSPACE" }}-{{ checksum "build_defs/repository.bzl" }}
-            - v1-bazel-{{ checksum ".bazelversion" }}-
           paths:
             - ~/bazel_repository_cache
+            - ~/bazel_disk_cache
       - run:
           name: Initialize Bazel
           command: |
@@ -21,6 +23,8 @@ jobs:
             echo "--host_jvm_args=-Xmx512m" >> .bazelrc
             # ask bazel to put its downloaded resources in a directory we can cache
             echo "build --repository_cache=~/bazel_repository_cache" >> .bazelrc
+            # ask bazel to put build artifacts somewhere we can easily cache them
+            echo "build --disk_cache=~/bazel_disk_cache" >> .bazelrc
             # download dependencies, ensure nothing is stale
             bazel sync
       - run:
@@ -31,9 +35,10 @@ jobs:
           paths: maven/src
       - save_cache:
           name: Save Cache - bazel repository
-          key: v1-bazel-{{ checksum ".bazelversion" }}-{{ checksum "WORKSPACE" }}-{{ checksum "build_defs/repository.bzl" }}
+          key: v2-bazel-{{ checksum ".bazelversion" }}-{{ checksum "WORKSPACE" }}-{{ checksum "build_defs/repository.bzl" }}
           paths:
             - ~/bazel_repository_cache
+            - ~/bazel_disk_cache
   deploy-to-sonatype:
     docker:
       - image: vertispan/openjdk:8u222-jdk-stretch
